@@ -27,7 +27,7 @@ import gzip
 from threading import Thread
 from optparse import OptionParser
 
-VERSION='0.1.1'
+VERSION='0.1.2'
 
 scanned_urls				=	[]
 urls_to_scan				=	[]
