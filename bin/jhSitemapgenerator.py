@@ -45,7 +45,7 @@ class jhSitemapgenerator:
 		global urls_to_scan
 		tmp_url_parsed		=	urllib.parse.urlparse(url)
 		if tmp_url_parsed.scheme not in ['http','https']:
-			print('You need to add https:// or http:// bevore the url!')
+			print('Error: Please prepend https:// or http:// to the url')
 			exit(1)
 		elif bad_urlschemes_regex.match(url):
 			print('What\'s \'{}://\' for a scheme? Try http:// or https://!'.format(tmp_url_parsed.scheme))
@@ -53,7 +53,7 @@ class jhSitemapgenerator:
 		else:
 			url		=	tmp_url_parsed.scheme + '://'
 		if not tmp_url_parsed.netloc:
-			print("Error: You must provide a hostname or a ipaddress!")
+			print("Error: You must provide a hostname or an ip address!")
 			exit(1)
 		else:
 			url		=	url + tmp_url_parsed.netloc
@@ -66,6 +66,7 @@ class jhSitemapgenerator:
 		if tmp_url_parsed.query:
 			url		=	url + '?' + tmp_url_parsed.query
 		del tmp_url_parsed
+		print('Scanning {} and writing to sitemap.xml\n'.format(url))
 		urls_to_scan		=	[url]
 		self.thread_cnt		=	thread_cnt
 		self.threads		=	[]
@@ -230,6 +231,6 @@ if __name__ == '__main__':
 	(options, args) = parser.parse_args()
 
 	if len(args) != 1:
-		print("You must provide one url! Use -h to display options.")
+		print("You must provide exactly one url! Use -h to display options.")
 		exit(1)
 	jhS	=	jhSitemapgenerator(args[0],options.threads,options.gz,options.plaintext)
