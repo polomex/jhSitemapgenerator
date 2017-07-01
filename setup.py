@@ -4,7 +4,7 @@
 from distutils.core import setup
 
 setup(name='jhSitemapgenerator',
-      version='0.1.2',
+      version='0.1.3',
       description='A multithreaded commandline tool to create sitemap.xml|.gz|.txt files from a website.',
       license='GPL3+',
       author='Jan Helbling',

@@ -1,6 +1,8 @@
-#!/usr/bin/python3
+#!/bin/bash
+''''which python3 >/dev/null 2>&1 && exec python3 "$0" "$@" # '''
+''''exec echo "Error: Can't find python3 on the system" # '''
 # -*- coding: utf-8 -*-
-#    jhSitemapgenerator.py 
+#    jhSitemapgenerator.py
 #    A multithreaded commandline tool to create sitemap.xml|.gz|.txt files from a website.
 #
 #    Copyright (C) 2014 by Jan Helbling <jan.helbling@gmail.com>
@@ -27,7 +29,7 @@ import gzip
 from threading import Thread
 from optparse import OptionParser
 
-VERSION='0.1.2'
+VERSION='0.1.3'
 
 scanned_urls				=	[]
 urls_to_scan				=	[]
@@ -43,7 +45,7 @@ class jhSitemapgenerator:
 		global urls_to_scan
 		tmp_url_parsed		=	urllib.parse.urlparse(url)
 		if tmp_url_parsed.scheme not in ['http','https']:
-			print('You need to add https:// or http:// bevore the url!')
+			print('Error: Please prepend https:// or http:// to the url')
 			exit(1)
 		elif bad_urlschemes_regex.match(url):
 			print('What\'s \'{}://\' for a scheme? Try http:// or https://!'.format(tmp_url_parsed.scheme))
@@ -51,7 +53,7 @@ class jhSitemapgenerator:
 		else:
 			url		=	tmp_url_parsed.scheme + '://'
 		if not tmp_url_parsed.netloc:
-			print("Error: You must provide a hostname or a ipaddress!")
+			print("Error: You must provide a hostname or an ip address!")
 			exit(1)
 		else:
 			url		=	url + tmp_url_parsed.netloc
@@ -64,13 +66,14 @@ class jhSitemapgenerator:
 		if tmp_url_parsed.query:
 			url		=	url + '?' + tmp_url_parsed.query
 		del tmp_url_parsed
+		print('Scanning {} and writing to sitemap.xml\n'.format(url))
 		urls_to_scan		=	[url]
 		self.thread_cnt		=	thread_cnt
 		self.threads		=	[]
 		self.gz			=	gz
 		self.plaintext		=	plaintext
 		self.__run()
-	
+
 	def __run(self):
 		self.parsedurl		=	urllib.parse.urlparse(urls_to_scan[0])
 		self.host		=	self.parsedurl.netloc
@@ -93,8 +96,8 @@ class jhSitemapgenerator:
 				thread.join()
 			del self.threads
 		self.__write_urls(scanned_urls)
-		
-	
+
+
 	def __run_thread(self):
 		global urls_to_scan,scanned_urls,not_html_urls
 		current_url		=	urls_to_scan.pop()
@@ -110,8 +113,8 @@ class jhSitemapgenerator:
 					urls_to_scan.append(url)
 		else:
 			not_html_urls.append(current_url)
-	
-	
+
+
 	def __extract_urls(self,content):
 		tmp_urls			=	url_regex.findall(content)
 		urls_to_return			=	[]
@@ -146,7 +149,7 @@ class jhSitemapgenerator:
 					else:
 						urls_to_return.append('http://'+self.host+'/'+url_to_parse)
 		return urls_to_return
-	
+
 	def __write_urls(self,url_list):
 		global exit_success
 		if url_list.__len__() != 0:
@@ -200,7 +203,7 @@ class jhSitemapgenerator:
 		if exit_success:
 			exit(0)
 		exit(1)
-	
+
 	def __get_page(self,url):
 		global exit_success
 		try:
@@ -216,7 +219,7 @@ class jhSitemapgenerator:
 			print('Error opening {}: {}.'.format(e.geturl(),e.reason))
 		except UnicodeEncodeError:
 			return None
-	
+
 	def __replace_html_chars(self,url):
 		return url.replace('&AMP;','&').replace('&LT;','<').replace('&GT;','>').replace('&NBSP;',' ').replace('&EURO;','€').replace('&amp;','&').replace('&lt;','<').replace('&gt;','>').replace('&nbsp;',' ').replace('&euro;','€').replace('%3f','?').replace('%2B','+').replace('%2F','/').replace('%3D','=').replace('%7C','|').replace('%26','&').replace('%25','%').replace('%2C',',').replace('%3A',':').replace('%3B',';').replace('%3f','?').replace('%2b','+').replace('%2f','/').replace('%3d','=').replace('%7c','|').replace('%2c',',').replace('%3a',':').replace('%3b',';')
 
@@ -226,8 +229,8 @@ if __name__ == '__main__':
 	parser.add_option('-g','--gz',action='store_true',dest='gz',default=False,help='Also create a sitemap.xml.gz')
 	parser.add_option('-p','--plaintext',action='store_true',dest='plaintext',default=False,help='Also create a urllist.txt')
 	(options, args) = parser.parse_args()
-	
+
 	if len(args) != 1:
-		print("You must provide one url! Use -h to display options.")
+		print("You must provide exactly one url! Use -h to display options.")
 		exit(1)
 	jhS	=	jhSitemapgenerator(args[0],options.threads,options.gz,options.plaintext)
