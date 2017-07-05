@@ -18,8 +18,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.#
 
 import urllib.request
 import urllib.parse
@@ -28,6 +27,7 @@ import re
 import gzip
 from threading import Thread
 from optparse import OptionParser
+
 
 VERSION='0.1.3'
 
@@ -39,16 +39,16 @@ exit_success				=	True
 
 url_regex				=	re.compile("[>< ]{1,4}[aA]{1,1}[ ]{0,4}[hrefHREF]{4}[ ]{0,4}\=\"([a-zA-Z0-9\.,_\-/~\\=\?\(\)\+\[\]\{\}<>\|@\*;: %\&\$£€üäöÖÄÜéàèç!\^]+)\"[ ><]{0,4}")
 bad_urlschemes_regex			=	re.compile("(aaa|aaas|about|acap|acct|adiumxtra|afp|afs|aim|app|apt|attachment|aw|barion|beshare|bitcoin|bolo|callto|cap|chrome|chrome-extension|com-eventbrite-attendee|cid|coap|coaps|content|crid|cvs|data|dav|dict|dlna-playsingle|dlna-playcontainer|dns|dtn|dvb|ed2k|facetime|fax|feed|file|finger|fish|ftp|geo|git|gizmoproject|go|gopher|gt|gtalk|h323|hcp|iax|icap|icon|im|imap|info|ipn|ipp|irc|irc6|ircs|iris|iris.beep|iris.xpc|iris.xpcs|iris.iws|itms|jabber|jar|jms|keyparc|lastfm|ldap|ldaps|magnet|mailserver|mailto|maps|market|message|mms|modem|ms-help|ms-settings-power|msnim|msrp|msrps|mtqp|mumble|mupdate|mvn|news|nfs|ni|nih|nntp|notes|oid|opaquelocktoken|outlook|pack|palm|paparazzi|pkcs11|platform|pop|prospero|proxy|psyc|query|reload|res|ressource|rmi|rsync|rtmfp|rtmp|rtsp|samp|secondlife|service|session|sftp|sgn|shttp|sieve|sip|sips|skype|smb|snews|snmp|soap.beep|soap.beeps|soldat|spotify|ssh|steam|stun|stuns|svn|tag|teamspeak|tel|telnet|tftp|things|thismessage|tn3270|tip|turn|turns|tv|udp|unreal|urmn|ut2004|vemmi|ventrillo|videotex|view-source|wais|webcal|ws|wss|wtai|wyciwyg|xcon|xcon-userid|xfire|xmlrpc.beep|xmlrpc.beeps|xmpp|xri|ymsgr|z39.50|z39.50r|z39.50s|doi|jdbc|stratum|javascript):")
-
+	
 class jhSitemapgenerator:
 	def __init__(self,url,thread_cnt,gz,plaintext):
 		global urls_to_scan
 		tmp_url_parsed		=	urllib.parse.urlparse(url)
 		if tmp_url_parsed.scheme not in ['http','https']:
 			print('Error: Please prepend https:// or http:// to the url')
-			exit(1)
-		elif bad_urlschemes_regex.match(url):
-			print('What\'s \'{}://\' for a scheme? Try http:// or https://!'.format(tmp_url_parsed.scheme))
+			exit(1)		elif bad_urlschemes_regex.match(url):
+
+print('What\'s \'{}://\' for a scheme? Try http:// or https://!'.format(tmp_url_parsed.scheme))
 			exit(1)
 		else:
 			url		=	tmp_url_parsed.scheme + '://'
@@ -66,12 +66,22 @@ class jhSitemapgenerator:
 		if tmp_url_parsed.query:
 			url		=	url + '?' + tmp_url_parsed.query
 		del tmp_url_parsed
-		print('Scanning {} and writing to sitemap.xml\n'.format(url))
+		
+		self.gz			=	gz
+		self.plaintext		=	plaintext
+		
+		if self.gz and self.plaintext:
+			print('Scanning {} and writing to sitemap.xml, sitemap.xml.gz and urllist.txt\n'.format(url))
+		elif self.plaintext and not self.gz:
+			print('Scanning {} and writing to urllist.txt and sitemap.xml\n'.format(url))
+		elif self.gz and not self.plaintext:
+			print('Scanning {} and writing to sitemap.xml and sitemap.xml.gz\n'.format(url))
+		elif not self.gz and not self.plaintext:
+			print('Scanning {} and writing to sitemap.xml\n'.format(url))
+		
 		urls_to_scan		=	[url]
 		self.thread_cnt		=	thread_cnt
 		self.threads		=	[]
-		self.gz			=	gz
-		self.plaintext		=	plaintext
 		self.__run()
 
 	def __run(self):
