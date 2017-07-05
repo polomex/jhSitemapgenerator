@@ -18,7 +18,8 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.#
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 import urllib.request
 import urllib.parse
@@ -46,9 +47,9 @@ class jhSitemapgenerator:
 		tmp_url_parsed		=	urllib.parse.urlparse(url)
 		if tmp_url_parsed.scheme not in ['http','https']:
 			print('Error: Please prepend https:// or http:// to the url')
-			exit(1)		elif bad_urlschemes_regex.match(url):
-
-print('What\'s \'{}://\' for a scheme? Try http:// or https://!'.format(tmp_url_parsed.scheme))
+			exit(1)
+		elif bad_urlschemes_regex.match(url):
+			print('What\'s \'{}://\' for a scheme? Try http:// or https://!'.format(tmp_url_parsed.scheme))
 			exit(1)
 		else:
 			url		=	tmp_url_parsed.scheme + '://'
