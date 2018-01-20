@@ -24,6 +24,7 @@
 import urllib.request
 import urllib.parse
 import urllib.error
+import http.client
 import re
 import gzip
 from threading import Thread,Lock
@@ -115,15 +116,13 @@ class jhSitemapgenerator:
 		global urls_to_scan,scanned_urls,not_html_urls,lock
 		with lock:
 			current_url		=	urls_to_scan.pop()
-			if current_url in urls_to_scan:
-				urls_to_scan.remove(current_url)
 			content			=	self.__get_page(current_url)
 			if content != None and current_url not in scanned_urls:
 				print("Scanned URL:",current_url)
 				scanned_urls.append(current_url)
 				tmp_urls		=	self.__extract_urls(content)
 				for url in tmp_urls:
-					if url not in scanned_urls and url not in urls_to_scan and url not in not_html_urls:
+					if url not in scanned_urls + urls_to_scan + not_html_urls:
 						urls_to_scan.append(url)
 			else:
 				not_html_urls.append(current_url)
@@ -233,7 +232,9 @@ class jhSitemapgenerator:
 			print('Error opening {}: {}.'.format(url,e.reason))
 		except UnicodeEncodeError:
 			return None
-
+		except http.client.RemoteDisconnected as e:
+			return None
+	
 	def __replace_html_chars(self,url):
 		return url.replace('&AMP;','&').replace('&LT;','<').replace('&GT;','>').replace('&NBSP;',' ').replace('&EURO;','€').replace('&amp;','&').replace('&lt;','<').replace('&gt;','>').replace('&nbsp;',' ').replace('&euro;','€').replace('%3f','?').replace('%2B','+').replace('%2F','/').replace('%3D','=').replace('%7C','|').replace('%26','&').replace('%25','%').replace('%2C',',').replace('%3A',':').replace('%3B',';').replace('%3f','?').replace('%2b','+').replace('%2f','/').replace('%3d','=').replace('%7c','|').replace('%2c',',').replace('%3a',':').replace('%3b',';')
 
