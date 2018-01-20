@@ -5,7 +5,7 @@
 #    jhSitemapgenerator.py
 #    A multithreaded commandline tool to create sitemap.xml|.gz|.txt files from a website.
 #
-#    Copyright (C) 2014 by Jan Helbling <jan.helbling@gmail.com>
+#    Copyright (C) 2018 by Jan Helbling <jan.helbling@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ from threading import Thread,Lock
 from optparse import OptionParser
 
 
-VERSION='0.1.3'
+VERSION='0.1.4'
 
 scanned_urls				=	[]
 urls_to_scan				=	[]
