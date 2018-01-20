@@ -26,7 +26,7 @@ import urllib.parse
 import urllib.error
 import re
 import gzip
-from threading import Thread
+from threading import Thread,Lock
 from optparse import OptionParser
 
 
@@ -40,7 +40,9 @@ exit_success				=	True
 
 url_regex				=	re.compile("[>< ]{1,4}[aA]{1,1}[ ]{0,4}[hrefHREF]{4}[ ]{0,4}\=\"([a-zA-Z0-9\.,_\-/~\\=\?\(\)\+\[\]\{\}<>\|@\*;: %\&\$£€üäöÖÄÜéàèç!\^]+)\"[ ><]{0,4}")
 bad_urlschemes_regex			=	re.compile("(aaa|aaas|about|acap|acct|adiumxtra|afp|afs|aim|app|apt|attachment|aw|barion|beshare|bitcoin|bolo|callto|cap|chrome|chrome-extension|com-eventbrite-attendee|cid|coap|coaps|content|crid|cvs|data|dav|dict|dlna-playsingle|dlna-playcontainer|dns|dtn|dvb|ed2k|facetime|fax|feed|file|finger|fish|ftp|geo|git|gizmoproject|go|gopher|gt|gtalk|h323|hcp|iax|icap|icon|im|imap|info|ipn|ipp|irc|irc6|ircs|iris|iris.beep|iris.xpc|iris.xpcs|iris.iws|itms|jabber|jar|jms|keyparc|lastfm|ldap|ldaps|magnet|mailserver|mailto|maps|market|message|mms|modem|ms-help|ms-settings-power|msnim|msrp|msrps|mtqp|mumble|mupdate|mvn|news|nfs|ni|nih|nntp|notes|oid|opaquelocktoken|outlook|pack|palm|paparazzi|pkcs11|platform|pop|prospero|proxy|psyc|query|reload|res|ressource|rmi|rsync|rtmfp|rtmp|rtsp|samp|secondlife|service|session|sftp|sgn|shttp|sieve|sip|sips|skype|smb|snews|snmp|soap.beep|soap.beeps|soldat|spotify|ssh|steam|stun|stuns|svn|tag|teamspeak|tel|telnet|tftp|things|thismessage|tn3270|tip|turn|turns|tv|udp|unreal|urmn|ut2004|vemmi|ventrillo|videotex|view-source|wais|webcal|ws|wss|wtai|wyciwyg|xcon|xcon-userid|xfire|xmlrpc.beep|xmlrpc.beeps|xmpp|xri|ymsgr|z39.50|z39.50r|z39.50s|doi|jdbc|stratum|javascript):")
-	
+
+lock					=	Lock()
+
 class jhSitemapgenerator:
 	def __init__(self,url,thread_cnt,gz,plaintext):
 		global urls_to_scan
@@ -110,20 +112,21 @@ class jhSitemapgenerator:
 
 
 	def __run_thread(self):
-		global urls_to_scan,scanned_urls,not_html_urls
-		current_url		=	urls_to_scan.pop()
-		if current_url in urls_to_scan:
-			urls_to_scan.remove(current_url)
-		content			=	self.__get_page(current_url)
-		if content != None and current_url not in scanned_urls:
-			print("Scanned URL:",current_url)
-			scanned_urls.append(current_url)
-			tmp_urls		=	self.__extract_urls(content)
-			for url in tmp_urls:
-				if url not in scanned_urls and url not in urls_to_scan and url not in not_html_urls:
-					urls_to_scan.append(url)
-		else:
-			not_html_urls.append(current_url)
+		global urls_to_scan,scanned_urls,not_html_urls,lock
+		with lock:
+			current_url		=	urls_to_scan.pop()
+			if current_url in urls_to_scan:
+				urls_to_scan.remove(current_url)
+			content			=	self.__get_page(current_url)
+			if content != None and current_url not in scanned_urls:
+				print("Scanned URL:",current_url)
+				scanned_urls.append(current_url)
+				tmp_urls		=	self.__extract_urls(content)
+				for url in tmp_urls:
+					if url not in scanned_urls and url not in urls_to_scan and url not in not_html_urls:
+						urls_to_scan.append(url)
+			else:
+				not_html_urls.append(current_url)
 
 
 	def __extract_urls(self,content):
