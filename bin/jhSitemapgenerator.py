@@ -117,7 +117,10 @@ class jhSitemapgenerator:
 		with lock:
 			current_url		=	urls_to_scan.pop()
 			content			=	self.__get_page(current_url)
-			if content != None and current_url not in scanned_urls:
+			#if content is "RemoteDisconnected":
+			#	print("ReScan URL:",current_url)
+			#	urls_to_scan.append(current_url)
+			if content not in [None,"RemoteDisconnected"]:
 				print("Scanned URL:",current_url)
 				scanned_urls.append(current_url)
 				tmp_urls		=	self.__extract_urls(content)
@@ -233,7 +236,7 @@ class jhSitemapgenerator:
 		except UnicodeEncodeError:
 			return None
 		except http.client.RemoteDisconnected as e:
-			return None
+			return "RemoteDisconnected"
 	
 	def __replace_html_chars(self,url):
 		return url.replace('&AMP;','&').replace('&LT;','<').replace('&GT;','>').replace('&NBSP;',' ').replace('&EURO;','€').replace('&amp;','&').replace('&lt;','<').replace('&gt;','>').replace('&nbsp;',' ').replace('&euro;','€').replace('%3f','?').replace('%2B','+').replace('%2F','/').replace('%3D','=').replace('%7C','|').replace('%26','&').replace('%25','%').replace('%2C',',').replace('%3A',':').replace('%3B',';').replace('%3f','?').replace('%2b','+').replace('%2f','/').replace('%3d','=').replace('%7c','|').replace('%2c',',').replace('%3a',':').replace('%3b',';')
