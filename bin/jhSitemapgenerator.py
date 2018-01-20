@@ -224,7 +224,7 @@ class jhSitemapgenerator:
 				return None
 			return (fd.read()).decode('utf-8','ignore')
 		except urllib.error.URLError as e:
-			print('Error opening {}: {}.'.format(e.geturl(),e.reason))
+			print('Error opening {}: {}.'.format(url,e.reason))
 			exit_success = False
 		except urllib.error.HTTPError as e:
 			print('Error opening {}: {}.'.format(e.geturl(),e.reason))
