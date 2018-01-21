@@ -235,8 +235,8 @@ class jhSitemapgenerator:
 			print('Error opening {}: {}.'.format(url,e.reason))
 		except UnicodeEncodeError:
 			return None
-		except http.client.RemoteDisconnected as e:
-			return "RemoteDisconnected"
+		#except http.client.RemoteDisconnected as e:
+		#	return "RemoteDisconnected"
 	
 	def __replace_html_chars(self,url):
 		return url.replace('&AMP;','&').replace('&LT;','<').replace('&GT;','>').replace('&NBSP;',' ').replace('&EURO;','€').replace('&amp;','&').replace('&lt;','<').replace('&gt;','>').replace('&nbsp;',' ').replace('&euro;','€').replace('%3f','?').replace('%2B','+').replace('%2F','/').replace('%3D','=').replace('%7C','|').replace('%26','&').replace('%25','%').replace('%2C',',').replace('%3A',':').replace('%3B',';').replace('%3f','?').replace('%2b','+').replace('%2f','/').replace('%3d','=').replace('%7c','|').replace('%2c',',').replace('%3a',':').replace('%3b',';')
