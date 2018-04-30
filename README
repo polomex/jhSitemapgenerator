@@ -28,3 +28,5 @@ jhSitemapgenerator
                               Number of threads, default 10.
         -g, --gz              Also create a sitemap.xml.gz
         -p, --plaintext       Also create a urllist.txt
+
+DONATE BITCOIN: 1JWj484iRqjnKaixQrJC7WPqk616WgdsaE
