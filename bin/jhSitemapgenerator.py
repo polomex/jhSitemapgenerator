@@ -209,13 +209,13 @@ class jhSitemapgenerator:
 				fd.close()
 				return None
 			return (fd.read()).decode('utf-8','ignore')
-		except urllib.error.URLError as e:
-			print('Error opening {}: {}.'.format(e.geturl(),e.reason))
-			exit_success = False
 		except urllib.error.HTTPError as e:
 			print('Error opening {}: {}.'.format(e.geturl(),e.reason))
 		except UnicodeEncodeError:
 			return None
+		except IOError as e:
+			print('Error: {0}'.format(e.args[0]))
+			exit_success = False
 	
 	def __replace_html_chars(self,url):
 		return url.replace('&AMP;','&').replace('&LT;','<').replace('&GT;','>').replace('&NBSP;',' ').replace('&EURO;','€').replace('&amp;','&').replace('&lt;','<').replace('&gt;','>').replace('&nbsp;',' ').replace('&euro;','€').replace('%3f','?').replace('%2B','+').replace('%2F','/').replace('%3D','=').replace('%7C','|').replace('%26','&').replace('%25','%').replace('%2C',',').replace('%3A',':').replace('%3B',';').replace('%3f','?').replace('%2b','+').replace('%2f','/').replace('%3d','=').replace('%7c','|').replace('%2c',',').replace('%3a',':').replace('%3b',';')
