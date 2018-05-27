@@ -26,6 +26,8 @@ import re
 import gzip
 from threading import Thread
 from optparse import OptionParser
+from fake_useragent import UserAgent
+
 
 VERSION='0.1.2'
 
@@ -204,7 +206,12 @@ class jhSitemapgenerator:
 	def __get_page(self,url):
 		global exit_success
 		try:
-			fd	=	urllib.request.urlopen(url)
+			req = urllib.request.Request(
+			    url, 
+			    data=None, 
+			    headers={"User-Agent":UserAgent().chrome}
+			)
+			fd	=	urllib.request.urlopen(req)
 			if 'text/html' not in fd.getheader('content-type'):
 				fd.close()
 				return None
