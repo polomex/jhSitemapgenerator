@@ -41,7 +41,7 @@ url_regex				=	re.compile("[>< ]{1,4}[aA]{1,1}[ ]{0,4}[hrefHREF]{4}[ ]{0,4}\=\"(
 bad_urlschemes_regex			=	re.compile("(aaa|aaas|about|acap|acct|adiumxtra|afp|afs|aim|app|apt|attachment|aw|barion|beshare|bitcoin|bolo|callto|cap|chrome|chrome-extension|com-eventbrite-attendee|cid|coap|coaps|content|crid|cvs|data|dav|dict|dlna-playsingle|dlna-playcontainer|dns|dtn|dvb|ed2k|facetime|fax|feed|file|finger|fish|ftp|geo|git|gizmoproject|go|gopher|gt|gtalk|h323|hcp|iax|icap|icon|im|imap|info|ipn|ipp|irc|irc6|ircs|iris|iris.beep|iris.xpc|iris.xpcs|iris.iws|itms|jabber|jar|jms|keyparc|lastfm|ldap|ldaps|magnet|mailserver|mailto|maps|market|message|mms|modem|ms-help|ms-settings-power|msnim|msrp|msrps|mtqp|mumble|mupdate|mvn|news|nfs|ni|nih|nntp|notes|oid|opaquelocktoken|outlook|pack|palm|paparazzi|pkcs11|platform|pop|prospero|proxy|psyc|query|reload|res|ressource|rmi|rsync|rtmfp|rtmp|rtsp|samp|secondlife|service|session|sftp|sgn|shttp|sieve|sip|sips|skype|smb|snews|snmp|soap.beep|soap.beeps|soldat|spotify|ssh|steam|stun|stuns|svn|tag|teamspeak|tel|telnet|tftp|things|thismessage|tn3270|tip|turn|turns|tv|udp|unreal|urmn|ut2004|vemmi|ventrillo|videotex|view-source|wais|webcal|ws|wss|wtai|wyciwyg|xcon|xcon-userid|xfire|xmlrpc.beep|xmlrpc.beeps|xmpp|xri|ymsgr|z39.50|z39.50r|z39.50s|doi|jdbc|stratum|javascript):")
 
 class jhSitemapgenerator:
-	def __init__(self,url,thread_cnt,ua,gz,plaintext):
+	def __init__(self,url,thread_cnt,gz,plaintext):
 		global urls_to_scan
 		tmp_url_parsed		=	urllib.parse.urlparse(url)
 		if tmp_url_parsed.scheme not in ['http','https']:
@@ -69,7 +69,6 @@ class jhSitemapgenerator:
 		urls_to_scan		=	[url]
 		self.thread_cnt		=	thread_cnt
 		self.threads		=	[]
-		self.ua			=	ua
 		self.gz			=	gz
 		self.plaintext		=	plaintext
 		self.__run()
@@ -207,23 +206,16 @@ class jhSitemapgenerator:
 	def __get_page(self,url):
 		global exit_success
 		try:
-			if self.ua:
-				req = urllib.request.Request(
-				    url, 
-				    data=None, 
-				    headers={"User-Agent":UserAgent().chrome}
-				)
-				fd	=	urllib.request.urlopen(req)
-				if 'text/html' not in fd.getheader('content-type'):
-					fd.close()
-					return None
-				return (fd.read()).decode('utf-8','ignore')
-			else:
-				fd	=	urllib.request.urlopen(url)
-				if 'text/html' not in fd.getheader('content-type'):
-					fd.close()
-					return None
-				return (fd.read()).decode('utf-8','ignore')	
+			req = urllib.request.Request(
+			    url, 
+			    data=None, 
+			    headers={"User-Agent":UserAgent().chrome}
+			)
+			fd	=	urllib.request.urlopen(req)
+			if 'text/html' not in fd.getheader('content-type'):
+				fd.close()
+				return None
+			return (fd.read()).decode('utf-8','ignore')	
 		except urllib.error.HTTPError as e:
 			print('Error opening {}: {}.'.format(e.geturl(),e.reason))
 		except UnicodeEncodeError:
@@ -238,7 +230,6 @@ class jhSitemapgenerator:
 if __name__ == '__main__':
 	parser	=	OptionParser(usage='%prog <http://|https:// -URL> [args]',version='%prog version {}\nLicense: GPL3+\nAuthor: Jan Helbling <jan.helbling@gmail.com>'.format(VERSION))
 	parser.add_option('-t','--threads',type='int',dest='threads',default=10,help='Number of threads, default 10.')
-	parser.add_option('-r','--random-ua',type='store_true',dest='ua',default=False,help='Randomize the user agent')	
 	parser.add_option('-g','--gz',action='store_true',dest='gz',default=False,help='Also create a sitemap.xml.gz')
 	parser.add_option('-p','--plaintext',action='store_true',dest='plaintext',default=False,help='Also create a urllist.txt')
 	(options, args) = parser.parse_args()
