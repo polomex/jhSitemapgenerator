@@ -238,6 +238,7 @@ class jhSitemapgenerator:
 if __name__ == '__main__':
 	parser	=	OptionParser(usage='%prog <http://|https:// -URL> [args]',version='%prog version {}\nLicense: GPL3+\nAuthor: Jan Helbling <jan.helbling@gmail.com>'.format(VERSION))
 	parser.add_option('-t','--threads',type='int',dest='threads',default=10,help='Number of threads, default 10.')
+	parser.add_option('-r','--random-ua',type='store_true',dest='ua',default=False,help='Randomize the user agent')	
 	parser.add_option('-g','--gz',action='store_true',dest='gz',default=False,help='Also create a sitemap.xml.gz')
 	parser.add_option('-p','--plaintext',action='store_true',dest='plaintext',default=False,help='Also create a urllist.txt')
 	(options, args) = parser.parse_args()
